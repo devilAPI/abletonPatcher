@@ -19,10 +19,13 @@ except ImportError:
         RESET = RED = WHITE = GREEN = LIGHTBLACK_EX = BRIGHT = ''
     Fore = Style = Dummy()
 
+patcher_version = "v3.0.0"
+
 RED = Fore.RED + Style.BRIGHT
 WHITE = Fore.WHITE + Style.BRIGHT
 GREY = Fore.LIGHTBLACK_EX + Style.NORMAL
 GREEN = Fore.GREEN + Style.BRIGHT
+YELLOW = Fore.YELLOW + Style.BRIGHT
 RESET = Style.RESET_ALL
 
 def is_admin():
@@ -93,7 +96,7 @@ def replace_signkey_in_file(file_path, old_signkey, new_signkey):
         new_signkey_bytes = bytes.fromhex(new_signkey)
         if old_signkey_bytes not in content:
             if new_signkey_bytes in content:
-                print(WHITE + "The new signkey is already present in the file. Ableton is already patched." + RESET)
+                print(YELLOW + "The new signkey is already present in the file. Ableton is already patched." + RESET)
             else:
                 print(RED + "Neither the old nor the new signkey was found in the file. You may be running an unsupported version or a different patch." + RESET)
         else:
@@ -243,7 +246,9 @@ _____ \_ |__ |  |   _____/  |_  ____   ____ \_   ___ \____________    ____ |  | 
      \/    \/          \/                 \/        \/            \/     \/     \/    \/    
    """ + RESET)
     print(WHITE + "Made by " + RED + "devilAPI" + RESET)
+    print(WHITE + "Version: " + RED + patcher_version + RESET)
     print(WHITE + "GitHub: " + GREY + "https://github.com/devilAPI/abletonCracker/" + RESET + "\n")
+    print(YELLOW + "NOTE: Make sure Ableton Live is not running while patching." + RESET)
 
     config_file = 'config.json'
     try:
