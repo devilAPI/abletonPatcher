@@ -23,7 +23,7 @@ You can download the Ableton Installers directly from Ableton's servers. I made 
 # How to use
 
 1. Install Python (3.10 upwards) at [python.org](https://www.python.org/downloads/)
-2. Open your Terminal and run `python -m pip install cryptography` to install dependencies
+2. Open your Terminal and run `python -m pip install cryptography colorama` to install dependencies
 3. Find your Ableton HWID, open Ableton, and press "Authorize Ableton offline". You will find your HWID.
 4. Open `config.json` and change the variables to fit your Ableton Live installation.
 5. Run `patch_ableton.py`, your Ableton should be patched and the `Authorize.auz` file should generate.
