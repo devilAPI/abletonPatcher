@@ -1,6 +1,6 @@
 # abletonCracker - What is this?
 
-This is an open-source implementation of the R2R Patch and `R2RLIVE.dll` of Ableton Live, written in Python 3.
+This is an open-source implementation of the R2R patch and `R2RLIVE.dll` of Ableton Live, written in Python.
 
 Like `R2RLIVE.dll`, this script uses Team R2R's signing key only.
 
@@ -22,19 +22,24 @@ You can download the Ableton Installers directly from Ableton's servers. I made 
 
 # How to use
 
-1. Install Python (3.12 upwards) at [python.org](https://www.python.org/downloads/)
+1. Install Python (3.10 upwards) at [python.org](https://www.python.org/downloads/)
 2. Open your Terminal and run `python -m pip install cryptography` to install dependencies
 3. Find your Ableton HWID, open Ableton, and press "Authorize Ableton offline". You will find your HWID.
 4. Open `config.json` and change the variables to fit your Ableton Live installation.
-5. Open your Ableton installation folder (for example: `C:\ProgramData\Ableton\Live 11 Suite\Program`)
-6. Copy the Ableton executable (.exe file) (for example: `Ableton Live 11 Suite.exe`) to the same folder where you downloaded abletonCracker.
-7. Run `patch_ableton.py`, your Ableton should be patched and the `Authorize.auz` file should generate.
-8. Copy your Ableton executable back to your installation folder
-9. Run Ableton, drag the `Authorize.auz` file into the Activation window
+5. Run `patch_ableton.py`, your Ableton should be patched and the `Authorize.auz` file should generate.
+6. Run Ableton, drag the `Authorize.auz` file into the Activation window
 
-Hooray, you're done!
+#### Hooray, you're done!
 
-If there are any permission erros, its recommended to move the Ableton.exe into the same folder where `patch_ableton.py` is located.
+# Troubleshooting
+#### I don't have administrator on my PC.
+1. Copy your Ableton executable to the same folder where patch_ableton.py is located.
+2. In config.json, change your file path from "auto" to the new file path of your Ableton exe.
+3. Retry
+4. It should work now. Then copy your Ableton exe back to the folder you got it from.
+
+# Support
+I do offer support on Discord (@devilAPI) and on Reddit (@devilAPIOnReddit)
 
 # Credits
 
