@@ -25,7 +25,7 @@ You can download the Ableton Installers directly from Ableton's servers. I made 
 1. Find your Ableton HWID: Open Ableton, and press "Authorize Ableton offline". You will find your HWID.
 2. Right click `quickstart.cmd` and select `Run as Administrator`.
 3. When the script asks you if you want to edit the config file, select `y`.
-4. You will only need to change the top 3 variables. Enter your HWID, the Live version and edition.
+4. You will only need to change the top 3 variables. Enter your HWID, the Live version and edition and **save the file (Ctrl+S)**
 5. The script will now ask you if you want to run the patcher. Select `y`.
 6. Select the installation of Ableton you want to patch
 7. The script will now ask if you want to open the folder, where `Authorize.auz` is located. Select `y`
