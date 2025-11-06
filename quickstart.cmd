@@ -111,7 +111,7 @@ echo $runPatcher = Read-Host "Do you want to run the patcher now? (y/n)"
 echo if ^($runPatcher -eq "y" -or $runPatcher -eq "Y"^) {
 echo     if ^($pythonPath^) {
 echo         Write-Host "Running patcher..." -ForegroundColor Green
-echo         ^& $pythonPath patch_ableton.py
+echo         ^& $pythonPath abletonCracker.py
 echo     } else {
 echo         Write-Host "ERROR: Python not found. Cannot run patcher." -ForegroundColor Red
 echo     }

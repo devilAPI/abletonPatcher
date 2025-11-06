@@ -5,6 +5,7 @@ import platform
 import sys
 import ctypes
 import subprocess
+import argparse
 from random import randint
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import dsa
@@ -46,26 +47,25 @@ def run_as_admin(undo=False):
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{script}" {params}', None, 1)
     sys.exit(0)
 
-def load_config(filename: str, undo: bool = False):
+def load_config(filename: str, args):
     try:
         with open(filename, 'r') as f:
             data = json.load(f)
-        file_path = data.get("file_path")
         
-        if undo:
+        # Use command line arguments if provided, otherwise use config file
+        file_path = args.file_path if args.file_path else data.get("file_path")
+        old_signkey = args.old_signkey if args.old_signkey else data.get("old_signkey")
+        new_signkey = args.new_signkey if args.new_signkey else data.get("new_signkey")
+        hwid = args.hwid if args.hwid else data.get('hwid', '').upper()
+        edition = args.edition if args.edition else data.get('edition', 'Suite')
+        version = args.version if args.version else data.get('version', 12)
+        authorize_file_output = args.authorize_file_output if args.authorize_file_output else data.get('authorize_file_output', 'output/Authorize.auz')
+        dsa_params = data.get('dsa_parameters')  # Keep DSA params in config only
+        
+        if args.undo:
             # For undo, swap the signkeys
-            old_signkey = data.get("new_signkey")
-            new_signkey = data.get("old_signkey")
-        else:
-            old_signkey = data.get("old_signkey")
-            new_signkey = data.get("new_signkey")
+            old_signkey, new_signkey = new_signkey, old_signkey
             
-        hwid = data.get('hwid', '').upper()
-        edition = data.get('edition', 'Suite')
-        version = data.get('version', 12)
-        authorize_file_output = data.get('authorize_file_output', 'Authorize.auz')
-        dsa_params = data.get('dsa_parameters')
-        
         if not file_path or not old_signkey or not new_signkey:
             raise ValueError("JSON file must contain 'file_path', 'old_signkey', and 'new_signkey'.")
         
@@ -73,7 +73,7 @@ def load_config(filename: str, undo: bool = False):
             hwid = "-".join(hwid[i:i+4] for i in range(0, 24, 4))
         assert re.fullmatch(r"([0-9A-F]{4}-){5}[0-9A-F]{4}", hwid), f"Expected hardware ID like 1111-1111-1111-1111-1111-1111, not {hwid}"
         
-        if not dsa_params and not undo:
+        if not dsa_params and not args.undo:
             raise ValueError("DSA parameters are missing in the config file.")
             
         return file_path, old_signkey, new_signkey, hwid, edition, version, authorize_file_output, dsa_params
@@ -150,7 +150,6 @@ def replace_signkey_in_file(file_path, old_signkey, new_signkey, undo: bool = Fa
         raise
 
 def sign(k: dsa.DSAPrivateKey, m: str) -> str:
-    """P1363 format sig over m as a string of hex digits"""
     assert k.key_size == 1024
     sig = k.sign(m.encode(), SHA1())
     r, s = decode_dss_signature(sig)
@@ -268,14 +267,61 @@ def find_installation_data():
     data_dirs.reverse()
     return data_dirs
 
+def open_folder(path):
+    folder_path = os.path.dirname(path)
+    if not os.path.exists(folder_path):
+        print(RED + f"Folder does not exist: {folder_path}" + RESET)
+        return False
+        
+    try:
+        if platform.system() == "Windows":
+            os.startfile(folder_path)
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", folder_path])
+        else:  # Linux and other Unix-like
+            subprocess.Popen(["xdg-open", folder_path])
+        return True
+    except Exception as e:
+        print(RED + f"Failed to open folder: {e}" + RESET)
+        return False
+
 def main():
-    # Check for undo flag at the very beginning
-    undo = "--undo" in sys.argv
+    # Set up command line argument parser
+    parser = argparse.ArgumentParser(description='Ableton Live Patcher', add_help=False)
+    parser.add_argument('--undo', action='store_true', help='Revert the patch (swap signkeys and skip authorization file)')
+    parser.add_argument('--file_path', type=str, help='Path to Ableton Live executable (or "auto")')
+    parser.add_argument('--old_signkey', type=str, help='Old signkey (hex string)')
+    parser.add_argument('--new_signkey', type=str, help='New signkey (hex string)')
+    parser.add_argument('--hwid', type=str, help='Hardware ID (24 hex chars or 6 groups of 4)')
+    parser.add_argument('--edition', type=str, choices=['Lite', 'Intro', 'Standard', 'Suite'], help='Ableton edition')
+    parser.add_argument('--version', type=int, help='Ableton version (e.g., 12)')
+    parser.add_argument('--authorize_file_output', type=str, help='Output path for Authorize.auz (or "auto")')
+    parser.add_argument('--help', action='store_true', help='Show this help message')
+    
+    # Parse arguments
+    args, unknown = parser.parse_known_args()
+    
+    # Show help if requested
+    if args.help:
+        print(WHITE + "Ableton Live Patcher " + RED + patcher_version + RESET)
+        print(WHITE + "Usage: python patcher.py [OPTIONS]" + RESET)
+        print("\nOptions:")
+        print("  --undo                      Revert the patch (swap signkeys and skip authorization file)")
+        print("  --file_path PATH            Path to Ableton Live executable or 'auto'")
+        print("  --old_signkey HEX           Old signkey (hex string)")
+        print("  --new_signkey HEX           New signkey (hex string)")
+        print("  --hwid ID                   Hardware ID (24 hex chars or 6 groups of 4)")
+        print("  --edition EDITION           Ableton edition (Lite, Intro, Standard, Suite)")
+        print("  --version NUMBER            Ableton version (e.g., 12)")
+        print("  --authorize_file_output PATH Output path for Authorize.auz or 'auto'")
+        print("  --help                      Show this help message")
+        print("\n" + YELLOW + "Note: Command line arguments override values in config.json" + RESET)
+        return
 
     if platform.system() == "Windows" and not is_admin():
         print(RED + "\nThis operation requires administrator privileges on Windows." + RESET)
         print(GREY + "Relaunching with admin rights..." + RESET)
-        run_as_admin(undo)
+        run_as_admin(args.undo)
         return
 
     print(RED + r"""      ___.   .__          __                _________                       __                 
@@ -289,14 +335,14 @@ _____ \_ |__ |  |   _____/  |_  ____   ____ \_   ___ \____________    ____ |  | 
     print(WHITE + "Version: " + RED + patcher_version + RESET)
     print(WHITE + "GitHub: " + GREY + "https://github.com/devilAPI/abletonCracker/" + RESET + "\n")
     
-    if undo:
+    if args.undo:
         print(PURPLE + "UNDO MODE: Reverting patch and skipping authorization file generation." + RESET)
 
     print(YELLOW + "NOTE: Make sure Ableton Live is not running while patching." + RESET)
 
     config_file = 'config.json'
     try:
-        file_path, old_signkey, new_signkey, hwid, edition, version, authorize_file_output, dsa_params = load_config(config_file, undo)
+        file_path, old_signkey, new_signkey, hwid, edition, version, authorize_file_output, dsa_params = load_config(config_file, args)
     except Exception as e:
         print(RED + f"Error loading configuration: {e}" + RESET)
         input(GREY + "Press Enter to exit..." + RESET)
@@ -323,7 +369,7 @@ _____ \_ |__ |  |   _____/  |_  ____   ____ \_   ___ \____________    ____ |  | 
             file_path = installations[0][0]
 
     # Skip authorization file generation in undo mode
-    if not undo:
+    if not args.undo:
         if authorize_file_output.lower() == "auto":
             data_dirs = find_installation_data()
             if not data_dirs:
@@ -362,6 +408,8 @@ _____ \_ |__ |  |   _____/  |_  ____   ____ \_   ___ \____________    ____ |  | 
         print(WHITE + "\nGenerating authorization keys..." + RESET)
         try:
             lines = list(generate_all(team_r2r_key, edition, version, hwid))
+            # Ensure the output directory exists
+            os.makedirs(os.path.dirname(authorize_file_output), exist_ok=True)
             with open(authorize_file_output, "w", newline="\n") as f:
                 f.write("\n".join(lines))
             print("Authorization file created: " + WHITE + f"{authorize_file_output}" + RESET)
@@ -372,9 +420,29 @@ _____ \_ |__ |  |   _____/  |_  ____   ____ \_   ___ \____________    ____ |  | 
 
     print(WHITE + "\nPatching executable..." + RESET)
     try:
-        replace_signkey_in_file(file_path, old_signkey, new_signkey, undo)
-        print(WHITE + "\nPatch completed successfully!" + RESET)
-        input(GREY + "Press Enter to exit..." + RESET)
+        replace_signkey_in_file(file_path, old_signkey, new_signkey, args.undo)
+        print(GREEN + "\nPatch completed successfully!" + RESET)
+        
+        # Only show the authorization file instructions and folder opening in normal mode
+        if not args.undo:
+            print(GREEN + "SUCCESS! Your Ableton Live is now patched." + RESET)
+            print(WHITE + "\nTo complete the activation:" + RESET)
+            print(WHITE + "1. Start Ableton Live" + RESET)
+            print(WHITE + "2. Simply drag and drop the " + YELLOW + "Authorize.auz" + WHITE + " file into the activation window" + RESET)
+            print(YELLOW + "\nThat's it! No need to copy files manually." + RESET)
+            
+            try:
+                response = input(WHITE + "\nDo you want to open the folder containing Authorize.auz? (y/N): " + RESET).strip().lower()
+                if response in ['y', 'yes']:
+                    if open_folder(authorize_file_output):
+                        print(GREEN + "Folder opened successfully!" + RESET)
+                    else:
+                        print(RED + "Could not open the folder automatically." + RESET)
+                        print(WHITE + "Please navigate to the folder manually. (usually in the same folder where the python file is located in the 'output' folder)" + RESET)
+            except:
+                pass  # If input fails, just continue
+                
+        input(GREY + "\nPress Enter to exit..." + RESET)
     except Exception as e:
         print(RED + f"\nPatch failed: {e}" + RESET)
         input(GREY + "Press Enter to exit..." + RESET)
