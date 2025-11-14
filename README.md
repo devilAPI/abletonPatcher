@@ -54,7 +54,7 @@ You can download the Ableton Installers directly from Ableton's servers. I made 
 4. It should work now. Then copy your Ableton exe back to the folder you got it from.
 
 # Support
-I do offer support on Discord (@devilAPI) and on Reddit (@devilAPIOnReddit)
+I do offer support on Discord (https://discord.gg/akswvyUk) and on Reddit (@devilAPIOnReddit)
 
 # Credits
 
