@@ -297,6 +297,8 @@ def main():
     parser.add_argument('--version', type=int, help='Ableton version (e.g., 12)')
     parser.add_argument('--authorize_file_output', type=str, help='Output path for Authorize.auz (or "auto")')
     parser.add_argument('--help', action='store_true', help='Show this help message')
+    parser.add_argument('--config_file', type=str, default='config.json', help='Path to config JSON file (default: config.json)'
+)
     
     # Parse arguments
     args, unknown = parser.parse_known_args()
@@ -340,7 +342,7 @@ _____ \_ |__ |  |   _____/  |_  ____   ____ \_   ___ \____________    ____ |  | 
 
     print(YELLOW + "NOTE: Make sure Ableton Live is not running while patching." + RESET)
 
-    config_file = 'config.json'
+    config_file = args.config_file
     try:
         file_path, old_signkey, new_signkey, hwid, edition, version, authorize_file_output, dsa_params = load_config(config_file, args)
     except Exception as e:

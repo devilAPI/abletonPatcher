@@ -37,13 +37,14 @@ You can download the Ableton Installers directly from Ableton's servers. I made 
 | Parameter | Type | Description | Default/Config |
 |-----------|------|-------------|----------------|
 | `--undo` | flag | Revert the patch (swap signkeys and skip authorization file) | Uses config.json values |
-| `--file_path` | string | Path to Ableton Live executable or "auto" for auto-detection | `config.json: file_path` |
-| `--old_signkey` | string | Old signkey (hex string) | `config.json: old_signkey` |
-| `--new_signkey` | string | New signkey (hex string) | `config.json: new_signkey` |
-| `--hwid` | string | Hardware ID (24 hex chars or 6 groups of 4) | `config.json: hwid` |
-| `--edition` | string | Ableton edition (Lite, Intro, Standard, Suite) | `config.json: edition` |
-| `--version` | integer | Ableton version (e.g., 12) | `config.json: version` |
-| `--authorize_file_output` | string | Output path for Authorize.auz or "auto" | `config.json: authorize_file_output` |
+| `--file_path` | string | Path to Ableton Live executable or "auto" for auto-detection | config.json: `file_path` |
+| `--old_signkey` | string | Old signkey (hex string) | config.json: `old_signkey` |
+| `--new_signkey` | string | New signkey (hex string) | config.json: `new_signkey` |
+| `--hwid` | string | Hardware ID (24 hex chars or 6 groups of 4) | config.json: `hwid` |
+| `--edition` | string | Ableton edition (Lite, Intro, Standard, Suite) | config.json: `edition` |
+| `--version` | integer | Ableton version (e.g., 12) | config.json: `version` |
+| `--authorize_file_output` | string | Output path for Authorize.auz or "auto" | config.json: `authorize_file_output` |
+| `--config_file` | string | Path, where the config file is located. | `config.json` |
 | `--help` | flag | Show help message | N/A |
 
 # Troubleshooting
