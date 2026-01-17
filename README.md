@@ -4,23 +4,23 @@ This is an open-source implementation of the R2R patch and `R2RLIVE.dll` of Able
 
 Like `R2RLIVE.dll`, this script uses Team R2R's signing key only.
 
-# Disclaimer
+## Disclaimer
 
 This script is not the result of reverse engineering Ableton Live, and the output of this script **will not** circumvent the protection on an **unmodified** copy of Ableton Live.
 
-# Download Ableton Installers
+## Download Ableton Installers
 
 You can download the Ableton Installers directly from Ableton's servers. I made a small HTML file to make this easier for you.
 
 [StaticAbletonDownloader](https://devilapi.github.io/StaticAbletonDownloader)
 
-# Compatibility
+## Compatibility
 
 - Works on Windows and Linux (with wine)
 - Should work for all Ableton Live Versions above Live 9 (9,10,11,12)
 - Every Edition works too (Lite, Intro, Standard, Suite)
 
-# Quickstart Guide
+## Quickstart Guide
 
 1. Find your Ableton HWID: Open Ableton, and press "Authorize Ableton offline". You will find your HWID.
 2. Right click `quickstart.cmd` and select `Run as Administrator`.
@@ -33,7 +33,7 @@ You can download the Ableton Installers directly from Ableton's servers. I made 
 
 #### Hooray, you're done!
 
-# Command Line Arguments
+## Command Line Arguments
 | Parameter | Type | Description | Default/Config |
 |-----------|------|-------------|----------------|
 | `--undo` | flag | Revert the patch (swap signkeys and skip authorization file) | Uses config.json values |
@@ -47,16 +47,16 @@ You can download the Ableton Installers directly from Ableton's servers. I made 
 | `--config_file` | string | Path, where the config file is located. | `config.json` |
 | `--help` | flag | Show help message | N/A |
 
-# Troubleshooting
+## Troubleshooting
 #### I don't have administrator on my PC.
 1. Copy your Ableton executable to the same folder where patch_ableton.py is located.
 2. In config.json, change your file path from "auto" to the new file path of your Ableton exe.
 3. Retry
 4. It should work now. Then copy your Ableton exe back to the folder you got it from.
 
-# Support
+## Support
 I do offer support on Discord (https://discord.gg/akswvyUk) and on Reddit (@devilAPIOnReddit)
 
-# Credits
+## Credits
 
-The Implementation of the KeyGen was made by [rufoa](https://github.com/rufoa). Go leave a star on his Git page!
+The Implementation of the KeyGen was made by [rufoa](https://github.com/rufoa). Go leave a star on his Git page!#
